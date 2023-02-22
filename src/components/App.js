@@ -1,88 +1,55 @@
 import React, { useState } from "react";
-import "../styles/App.css";
 
+import { signUpFormValidation } from "./../utils/validation";
+const initialState = {
+  name: "",
+  email: "",
+  password: "",
+  consent: "off"
+};
 const App = () => {
-  const [formStatus, setFormStatus] = useState(false);
-  const initialValues = { username: "", email: "", password: "" };
-  const [formData, setFormData] = useState(initialValues);
-  const [formErrors, setFormErrors] = useState({});
-
-  const handleChange = (event) => {
-    console.log("event", event.target.value, event.target.name);
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+  const [user, setUser] = useState(initialState);
+  const [result, setResult] = useState({});
+  const consentHandler = (e) => {
+    setUser({ ...user, [e.target.id]: e.target.checked });
   };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("FormData Submitted...", formData);
-    const errorRet = validateForm(formData);
-    setFormErrors(errorRet);
-    if (Object.keys(errorRet).length === 0) {
-      setFormStatus(true);
-      console.log("--------------hahah------------------");
-      //api call - formData
-      setFormData(initialValues);
-    }
+  const changeHandler = (e) => {
+    setUser({ ...user, [e.target.id]: e.target.value });
   };
-  const validateForm = (form_Data) => {
-    let error = {};
-    if (!form_Data.username) {
-      //username is blank
-      error.username = "Please, enter username...";
-    }
-    if (!form_Data.email) {
-      //email is blank
-      error.email = "Please, enter email...";
-    }
-    if (!form_Data.password) {
-      //password is blank
-      error.password = "Please, enter password...";
-    }
-    return error;
+  const submitHandler = (e) => {
+    e.preventDefault();
+    setResult(signUpFormValidation(user));
+    console.log(result);
   };
   return (
-    <>
-      <br></br>
-      <form>
+    <div>
+      <form onSubmit={submitHandler}>
         <div>
-          <h2>Sign Up Form</h2>
+          <label htmlFor="name">Name :</label>
+          <input type="text" id="name" onChange={(e) => changeHandler(e)} />
+          {result && <p style={{ color: "red" }}>{result.name}</p>}
         </div>
-        <br></br>
-        Name:
-        <input
-          type="text"
-          name="username"
-          onChange={handleChange}
-          value={formData.username}
-        />
-        <div className="text-danger">{formErrors.username}</div>
-        <br></br>
-        Email:
-        <input
-          type="email"
-          name="email"
-          onChange={handleChange}
-          value={formData.email}
-        />
-        <div className="text-danger">{formErrors.email}</div>
-        <br></br>
-        password:
-        <input
-          type="password"
-          name="password"
-          onChange={handleChange}
-          value={formData.password}
-        />
-        <div className="text-danger">{formErrors.password}</div>
-        <br></br>
-        <button type="submit" onClick={handleSubmit}>
-          Submitssss
-        </button>
+        <div>
+          <label htmlFor="email">Email :</label>
+          <input type="email" id="email" onChange={(e) => changeHandler(e)} />
+          {result && <p style={{ color: "red" }}>{result.email}</p>}
+        </div>
+        <div>
+          <label htmlFor="password">Password :</label>
+          <input type="text" id="password" onChange={(e) => changeHandler(e)} />
+          {result && <p style={{ color: "red" }}>{result.password}</p>}
+        </div>
+        <div>
+          <label htmlFor="consent">Consent :</label>
+          <input
+            type="checkbox"
+            id="consent"
+            onChange={(e) => consentHandler(e)}
+          />
+        </div>
+        <button type="submit">Signup</button>
       </form>
-      <br></br>
-      {formStatus && <div>Form successfully Submitted...</div>}
-      <br></br>
-    </>
+    </div>
   );
 };
 
